@@ -1,3 +1,4 @@
+*BTW: This booklet is in progress. If you would like to participate email me alan.khosro at gmail.*
 
 # iGo: Golang for idiots
 Go is simple by "design". You may say Go is an orthodox religion in programming
@@ -18,7 +19,6 @@ This booklet encourage you to use the following resourced along with this bookle
 - [Effective Go](golang.org/doc/effective_go.html): After reading this booklet, whenver you need to learn more, effective Go is an effective source.
 - [Go Standard Packages](godoc.org/-/go): Go's documentation for standard packages is developed to show how Go works in practice. After you advanced a little, use this source as an ultimate learning resource.
 
-*BTW: This booklet is in progress. If you would like to participate email me alan.khosro at gmail.*
 
 ******************
 ## Hello World
