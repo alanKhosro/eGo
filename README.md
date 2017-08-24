@@ -1,24 +1,20 @@
-*BTW: This booklet is in progress. If you would like to participate email me alan.khosro at gmail.*
+*BTW: This booklet is in progress. If you would like to contribute email me alan.khosro at gmail.*
 
-# iGo: Golang for idiots
-Go is simple by "design". You may say Go is an orthodox religion in programming
-and software development that denies or rejects most of the recent advancement and conventions. You may also say it is Zen of the software development world.
-If you think very sophisticated, you are overthinking in Goland. It needs no education but it is not very easy to use either. 
+# Golang: Programming with Go for beginners
+Go is simple by "design". You may say Go is an orthodox religion that denies most of the recent advancement and conventions in software development. You may also say it is Zen for software development.
+If you think very sophisticated, you are overthinking in Goland. It needs not much education but it is not very easy to use it either. It is not for casual developer, it aims for smart and elegant software development. 
 
-Python is easy and convenient (comformist), C++/C#/Java are theoritically advanced (academician), C/Pascal is old-style (orthodox), R/Matlab/SQL are niche players (focused), JS/VBasic/Ruby are supporting lnaguages (UX), Go is Zen for software development (Genuine).
+Python is easy and convenient (comformist), C++/C#/Java are theoritically advanced (academician), C/Pascal are old-style (orthodox), R/Matlab/SQL are niche players (focused), JS/VBasic/Ruby are supporting lnaguages (Auxulary), Go is for genuine programming (Zen).
 
-It has a genuis way to implement parallelism, inheritance, safety, and modularity: four destruptive concepts in the last four decades.
+It has a genuis way to implement parallelism, inheritance, safety, and modularity: four destruptive concepts in the last four decades after the inception of C.
 
-To learn Go, you need to think simple like a Zen students. Forget every sophisticated concept like object, class, polymorphism, asynchronism, ...
+To learn Go, you need to think simple like a Zen master. Forget sophisticated concept like object, class, polymorphism, asynchronism, generics, encapsulation, oop, ...
 
-This booklet aimed programmers with little knowledge in programming and will not use sophisticated concepts. It is an idiot guide written by an idiot programmer for all other idiot programmers. 
-
-This booklet encourage you to use the following resourced along with this booklet:
+This booklet for programmers with little (or no) knowledge in programming and it will avoid unnecessary, sophisticated concepts. This booklet encourages you to use the following resources along with this booklet:
 - [A Tour Of Go](tour.golang.org): It is an amazing source to learn basics of Go. I assume you already had a tour of go, if not, do not miss it.
 - [Go Playground](play.golang.org): Whenever you want to test and learn, you can use this playground. We use it throughout this booklet.
 - [Effective Go](golang.org/doc/effective_go.html): After reading this booklet, whenver you need to learn more, effective Go is an effective source.
 - [Go Standard Packages](godoc.org/-/go): Go's documentation for standard packages is developed to show how Go works in practice. After you advanced a little, use this source as an ultimate learning resource.
-
 
 ******************
 ## Hello World
@@ -84,4 +80,41 @@ var x int = 10
 
 
 ## Interface
+Function `fmt.Println` has a secret feature. Try to figure it out through what `fmt.Println` prints for the following program:
+```go
+package main
+import "fmt"
+type Human struct {
+    name string
+    job string
+    hubby string
+}
+func (h Human) String () string {
+    return ("Hi, my name is "+h.name+"and I would like to do "+h.hubby+"in my spare time.")
+}
+func (h Human) Introduce () string {
+    return (" Name: "+h.name+"\n Job: "+h.job)
+}
+func main () {
+    h := Human{"Alan", "Developer", "Writing"}
+    fmt.Println(h)
+}
+```
+How did `fmt.Println(h)` know to print the return of `h.String()` and not `h.Introduce()`? 
+How does a function knows what to do "in future" when facing a new data type? How to write a function that works for a variety of data types? The answer is "through `interface`". `interface` is nothing but a collection of function interfaces (or definitions) but it works like magic.
+
+Let us start with an example: we want a "method" that prints summary for any variable--no matter what data structure it has--that have `Stat()` method. We need to define the interface of `Stat()` in `interface{}` and write our method that receives this `interface{}`.
+```go
+type stat interface{
+    Stat() []float64
+}   
+
+func Summary (s stat) {
+    nums := s.Stat()
+    fmt.Println("For this stat, the average is ", )
+}
+
+```
+
+
 
