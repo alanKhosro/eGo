@@ -1,4 +1,4 @@
-*BTW: This booklet is in progress. If you would like to contribute email me alan.khosro at gmail.*
+*BTW: This booklet is in progress. If you would like to contribute, please email me alan.khosro at gmail.*
 
 # Elegant Go
 Go is simple by "design". Go codes are elegant but you may find it difficult at the beginning due to its minimalistic approach to develop a robust, fast, safe, and scalable software. 
@@ -139,31 +139,183 @@ if f, ok := con.String.ParseFloat64 (s); !ok {
 
 BTW: Go functions can return multiple values and Goephers take advantage of it often. One of usual return values for many functions is `error` or similar values that shows if the function execution was successful. Error handling in Go is nothing but returning and checking this extra value.
 
-> Example: We start building a real world application to store and fetch financial data.  
+
+*******************************
+> Project: We start building a real world application to store and fetch financial data.
+
+The first step is to define a data `type` that stores each ticker's data:  
 
 ## `struct`
-First, we need to define `type Firm` as a `struct`ure that is a collection of fields such as Company `Name`, `Exchange` Market, and `IPO` Year:
+`struct` is a collection of fields that lets us create customized `type`s. 
+
+For our finance project, we define `type ticker` as a `struct`ure with fields Company `Name`, `Exchange` Market, and `IPO` Year:
 ```go 
-type Firm struct {
+type ticker struct {
     Name string
     Exchange string
     IPO int // represents IPO year
 }
 ```
-Then we can define `var`iables of `type Firm` to store information:
+Then we can define `var`iables of `type ticker` to store information:
 ```go
-var goog Firm = {"Alphabet Inc", "NASDAQ", 2004}
+var goog ticker
+goog = {"Alphabet Inc", "NASDAQ", 2004}
 ```
-We also could use the fields names and use idiomatic decleration:
+It is more common to use idiomatic `var` decleration for `struct`:
 ```go
-appl := Firm{Name: "Apple Inc", Exchange: "NASDAQ", IPO:1980}
-msft := Firm{Name: "Microsoft", Exchange: "NYSE"}
-amzn := Firm{Exchange: "NASDAQ"}
+appl := ticker{"Apple Inc", "NASDAQ", 1980}
+msft := ticker{Name: "Microsoft", Exchange: "NYSE"}
+amzn := ticker{Exchange: "NASDAQ"}
 ```
-If a field is left out with no value, the `zero` of that type will be filled.
+If a field is left out with no value, it will have the `zero` value of that type. S,o `amzn` value is `{"","NASDAQ,0}`.
+
+
+### xxxxx
+We also need to store data like this example:
+> On 12/29/2016, Revenue item from Balance Sheet statement was 100 Euro
+
+We need a `struct` that holds multiple fields:
+```go
+type rec struct{
+    TS time.Time
+    Statement string
+    Item string
+    Value float64
+    Currency string // or [3]byte
+    Note string
+}
+```
+We borrowed a `type` from another package called `"time"` that has functions and methods to work with `type Time`. This `type time.Time` is basically just `int64` that holds time in nanosecond and the origin (time zero) is beginning of 1970 (Unix standard). Package `godoc` mentions:
+```go
+type Time int64 
+```
+
+But we will have series of records, so we define a `slice` of the above `rec`:
+```go
+type recs []rec
+```
+
+## Subtype and Inheritance in Go
+Now we are ready to define a `struct` for the following example:
+> IBM Inc. has a ticker and stores financial records for Yearly, Quarterly, Monthly, and Daily data.
+
+We create a new `struct` that embeds `ticker`. This is the Go way to inheritance (by composition). Go just replaces `recs` in this child `struct` with original definition to reuse the code. all methods that ticker implements can recieve `Firm`. 
+```go
+type Firm struct{
+    ticker
+    Y, Q, M, D recs // for Yearly, Quarterly, Monthly, Daily records respectively
+}
+```
+I above embeded `ticker` inside `Firm` and we defined data columns the new `type` that we defined.
+
+## Map: Key-Value 
+But we need many firms, like when we write `Firms["IBM"]` it should take us to the unique memory place that stores `IBM` data. Data type `Map` does the job perfectly:
+```go
+type Firms Map[string]Firm
+```
+As the name suggest, `Map` is a map from one `type` (key) to another part of memory that stores another `type` (value) (like a hash table).
+Our main job is done. We created the data structure that we needed for our financial app. We talk about little "devil details" about `slice`, `Map`, `struct`, `composition`, `struct`, etc. when we populate `Firms` with data. 
+
+Let us put all pieces together and create one of our packages:
+```go
+/*
+package firms provides type and functions to store stock exchange information for each firm and the methods and function to populate data and fetch data 
+*/
+package firms
+// to store one time-based record
+type Rec struct{
+    TS time.Time
+    Freq byte //Y, Q, M, D for Yearly, Quarterly, Monthly, Daily records respectively
+    Statement string
+    Item string
+    Value float64
+    Currency string // or [3]byte
+    Note string
+}
+
+// Type Firm stores stock information
+type Firm struct{
+    Name string
+    Exchange string
+    IPO int
+    data []Rec
+}
+// Maps ticker to Firm data
+type Firms Map[string]Firm
+```
+
+## Read from CSV file
+> Project: populate Firms from a local csv file 
+
+We open the file, read line by line, split each line with `,` to create `[]string`, convert `type` and put each splitted `string` in its appropriate `struct` field. If a firm was not found, we create a firm of type `Firm`.
+
+```go
+func (firms *Firms) FromCSV (file string, split=',') error {
+    reader, _ := os.open(file)
+    scanner, _:= bufio.NewScanner(reader)
+    fields := scanner.Text() // This is csv header, the first row
+    _ := s
+    for scanner, _ := bufio.NewScanner(reader), scanner.Scan(); scanner.Scan(); append(rows, &row) {
+        fields = strings.Split(scanner.Text(), split)
+        exchange, symbol, name, freq = fields[2], fields[3], fields[4], fields[5]
+        t, _ = time.Parse(layout, fields[6])
+        n, _ = strconv.ParseFloat(fields[7], 64)
+
+        if firm, ok := firms[symbol]; !ok {
+            firm := Firm[symbol]{}
+        }
+        if exchange!="" {
+            firm.exchange = exchange 
+        }
+        if name="" {
+            firm.name = name
+        }
+
+        row = Row{t,n}
+        append(firm.A, row)
+    }
+} 
+```
+> Extra: Just read all string csv file
+```go
+func readCSV (file string, split=',') interface{}, error {
+    reader, _ := os.file (file)
+    scanner := bufio.NewScanner(reader)
+
+}
+```
 
 
 
+Fin.Revenue ----> (SEC.Revenue, 20 firms, 40 years or quarters)
+Fin.Revenue -----> (SEC.Total_Revenue, 10 firms, 32 years or quarters)
+
+Pickle this dataset
+
+Filter less than 10% coverage (of firms)
+Sort by firms
+    Fin.Revenue ---> Revenue, Total_Revenue
+
+
+Find value for each item:
+    for item in []Sec.items
+        if Sec.Item.Value not missing return Value and break
+
+Compare the accuracy between Existing and New one
+
+
+### Parse Data
+
+For each Year and Firm and statement:
+    Sort SEC data upside down
+    Select item, value and sort Fin data upside down // maybe round (value)
+    for each item in Fin find []items in SEC that SEC.value = Fin.value
+    Report Map[Fin.Item][]Sec.Item 
+
+For each statement and Firm (all years)
+    find Map[Fin.Item] intersect([]Sec.Item for each year)
+
+For all firms 
 
 
 
